@@ -10,14 +10,14 @@ type User struct {
 }
 
 type Post struct {
-	User User
+	User
 	Body string
 }
 
+//匿名组合
 type IndexViewModel struct {
 	Title string
-	User  User
-
+	User
 	Posts []Post
 }
 
