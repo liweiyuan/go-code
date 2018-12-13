@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-{{if .Title}}}
+{{if .Title}}
     <title>{{.Title}} - blog</title>
-{{else}}}
+{{else}}
     <title>welcome to blog</title>
-{{end}}}
+{{end}}
 </head>
 <body>
 <h1>Hello, {{.User.Username}}!</h1>
+{{range .Posts}}
+<div><p>{{.User.Username}} says: <b>{{.Body}}</b></p></div>
+{{end}}
 </body>
 </html>
