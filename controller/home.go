@@ -55,7 +55,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 //账号，密码验证
 func check(userName string, password string) bool {
 
-	if userName == "wade" && password == "bosh" {
+	if userName == "bonfy" && password == "abc123" {
 		return true
 	}
 	return false

@@ -8,3 +8,22 @@ type User struct {
 	Posts        []Post
 	Followers    []*User `gorm:"many2many:follower;association_jointable_foreignkey:follower_id"`
 }
+
+// SetPasswordHash func 
+func (u *User) SetPassword(password string) {
+	u.PasswordHash = GeneratePasswordHash(password)
+}
+
+// CheckPassword func
+func (u *User) CheckPassword(password string) bool {
+	return GeneratePasswordHash(password) == u.PasswordHash
+}
+
+// GetUserByUserName func
+func GetUserByUserName(userName string) (*User, error) {
+	var user User
+	if err := db.Where("username=?", userName).Find(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
