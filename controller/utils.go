@@ -4,6 +4,9 @@ import (
 	"os"
 	"html/template"
 	"io/ioutil"
+	"net/http"
+	"fmt"
+	"errors"
 )
 
 // PopulateTemplates func
@@ -39,4 +42,37 @@ func PopulateTemplate() map[string]*template.Template {
 		result[fi.Name()] = tmpl
 	}
 	return result
+}
+
+//session
+
+//set
+func setSessionUser(w http.ResponseWriter, r *http.Request, userName string) error {
+	session, err := store.Get(r, userName)
+	if err != nil {
+		return err
+	}
+	session.Values["user"] = userName
+	err = session.Save(r, w)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+//get
+func getSessionUser(r *http.Request) (string, error) {
+	var userName string
+	session, err := store.Get(r, sessionName)
+	if err != nil {
+		return "", err
+	}
+	val := session.Values["user"]
+	fmt.Println("val:", val)
+	userName, ok := val.(string)
+	if !ok {
+		return "", errors.New("can not get session user")
+	}
+	fmt.Println("username:", userName)
+	return userName, nil
 }
