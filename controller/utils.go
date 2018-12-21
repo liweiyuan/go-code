@@ -76,3 +76,19 @@ func getSessionUser(r *http.Request) (string, error) {
 	fmt.Println("username:", userName)
 	return userName, nil
 }
+
+//clear
+func clearSession(w http.ResponseWriter, r *http.Request) error {
+	session, err := store.Get(r, sessionName)
+	if err != nil {
+		return err
+	}
+
+	session.Options.MaxAge = -1
+	err = session.Save(r, w)
+	if err != nil {
+		return err
+	}
+	return nil
+
+}

@@ -5,6 +5,7 @@ import (
 	"github.com/liweiyuan/go-code/controller"
 	"net/http"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/gorilla/context"
 )
 
 func main() {
@@ -16,5 +17,5 @@ func main() {
 
 	// Setup Controller
 	controller.Startup()
-	http.ListenAndServe(":8888", nil)
+	http.ListenAndServe(":8888", context.ClearHandler(http.DefaultServeMux))
 }
