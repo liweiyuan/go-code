@@ -15,7 +15,7 @@ type LoginViewModelOp struct {
 
 func (LoginViewModelOp) GetViewModel() LoginViewModel {
 	v := LoginViewModel{}
-	v.setTitle("Login")
+	v.SetTitle("Login")
 	return v
 }
 
