@@ -35,3 +35,5 @@ func CheckLogin(username, password string) bool {
 	}
 	return user.CheckPassword(password)
 }
+
+
