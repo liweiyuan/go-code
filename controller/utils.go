@@ -48,7 +48,7 @@ func PopulateTemplate() map[string]*template.Template {
 
 //set
 func setSessionUser(w http.ResponseWriter, r *http.Request, userName string) error {
-	session, err := store.Get(r, userName)
+	session, err := store.Get(r, sessionName)
 	if err != nil {
 		return err
 	}

@@ -45,9 +45,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		if len(password) < 3 {
 			v.AddError("password must longer than 6")
 		}
-		if !check(userName, password) {
+		/*if !check(userName, password) {
 			v.AddError("username password not correct, please input again")
-		}
+		}*/
 
 		if !vm.CheckLogin(userName, password) {
 			v.AddError("username password not correct, please input again")
