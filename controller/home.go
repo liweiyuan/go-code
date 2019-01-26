@@ -4,16 +4,67 @@ import (
 	"net/http"
 	"github.com/liweiyuan/go-code/vm"
 	"log"
+	"github.com/gorilla/mux"
+	"fmt"
 )
 
 type home struct {
 }
 
 func (h home) registerRouters() {
-	http.HandleFunc("/", midleAuth(indexHandler))
-	http.HandleFunc("/login", loginHandler)
-	http.HandleFunc("/register", registerHandler)
-	http.HandleFunc("/logout", midleAuth(logoutHandler))
+	r := mux.NewRouter()
+	r.HandleFunc("/", middleAuth(indexHandler))
+	r.HandleFunc("/login", loginHandler)
+	r.HandleFunc("/register", registerHandler)
+	r.HandleFunc("/logout", middleAuth(logoutHandler))
+	r.HandleFunc("/user/{username}", middleAuth(profileHandler))
+
+	r.HandleFunc("/profile_edit", middleAuth(profileEditHandler))
+
+	http.Handle("/", r)
+}
+
+func profileEditHandler(w http.ResponseWriter, r *http.Request) {
+	tpName := "profile_edit.html"
+
+	userName, _ := getSessionUser(r)
+	vop := vm.ProfileEditViewModelOp{}
+	v := vop.GetViewModel(userName)
+	if r.Method == http.MethodGet {
+		err := templates[tpName].Execute(w, &v)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	if r.Method == http.MethodPost {
+		r.ParseForm()
+		aboutme := r.Form.Get("aboutme")
+		log.Println(aboutme)
+		if err := vm.UpdateAboutMe(userName, aboutme); err != nil {
+			log.Println("update Aboutme error:", err)
+			w.Write([]byte("Error update aboutme"))
+			return
+		}
+		http.Redirect(w, r, fmt.Sprintf("/user/%s", userName), http.StatusSeeOther)
+	}
+}
+
+//个人主页
+func profileHandler(w http.ResponseWriter, r *http.Request) {
+	tpName := "profile.html"
+	vars := mux.Vars(r)
+	pUser := vars["username"]
+	sUser, _ := getSessionUser(r)
+	vop := vm.ProfileViewModelOp{}
+	v, err := vop.GetViewModel(sUser, pUser)
+	if err != nil {
+		msg := fmt.Sprintf("user ( %s ) does not exist", pUser)
+		w.Write([]byte(msg))
+		return
+	}
+	templates[tpName].Execute(w, &v)
+
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
@@ -59,13 +110,12 @@ func logoutHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 }
 
-
 //registerHandler Func
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	tpName:="register.html"
+	tpName := "register.html"
 
-	vop:=vm.RegisterViewModelOp{}
-	v:=vop.GetViewModel()
+	vop := vm.RegisterViewModelOp{}
+	v := vop.GetViewModel()
 
 	if r.Method == http.MethodGet {
 		templates[tpName].Execute(w, &v)
